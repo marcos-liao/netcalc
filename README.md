@@ -36,11 +36,7 @@ Libraries are loaded via CDN on first use (D3.js, SheetJS) — internet required
 
 ## Screenshots
 
-### Calculator Tab
-Supports IPv4 and IPv6 with bit-level visualization and address block map.
-
-### Subnetting Tab
-FLSM for equal division, VLSM for variable allocation, with inline tree view and Mermaid export.
+![NetCalc](img/calculator.png)
 
 ## Tech Stack
 
