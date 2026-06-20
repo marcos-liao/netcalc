@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NetCalc — Dual-Stack Subnet Calculator</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="app">
+    <header class="topbar">
+      <div class="topbar-left">
+        <span class="logo">&#9671; NetCalc</span>
+        <span class="badge">dual-stack</span>
+      </div>
+      <nav class="topbar-nav">
+        <a href="#" class="nav-link active" data-tab="calculator">Calculator</a>
+        <a href="#" class="nav-link" data-tab="subnetting">Subnetting</a>
+      </nav>
+    </header>
+
+    <main class="content">
+      <div id="tab-calculator" class="tab-content active">
+
+        <div class="calc-input-bar">
+          <div class="input-group">
+            <label for="ip-input">IP address / CIDR</label>
+            <input type="text" id="ip-input" placeholder="192.168.10.0/24" spellcheck="false">
+          </div>
+          <div class="mode-toggle">
+            <button class="mode-btn active" data-mode="ipv4">IPv4</button>
+            <button class="mode-btn" data-mode="ipv6">IPv6</button>
+          </div>
+          <button id="btn-calculate" class="btn-primary">Calculate</button>
+        </div>
+
+        <div class="ref-bar" id="ref-bar">
+          <button class="ref-toggle" id="ref-toggle">Quick Reference <span class="ref-arrow">&#9662;</span></button>
+          <div class="ref-content" id="ref-content" style="display:none;">
+            <div id="ref-ipv4" class="ref-panel">
+              <div class="ref-columns">
+                <div class="ref-col">
+                  <h4>CIDR notation</h4>
+                  <table class="ref-table">
+                    <tr><td>/8</td><td>255.0.0.0</td><td>16,777,214 hosts</td></tr>
+                    <tr><td>/16</td><td>255.255.0.0</td><td>65,534 hosts</td></tr>
+                    <tr><td>/24</td><td>255.255.255.0</td><td>254 hosts</td></tr>
+                    <tr><td>/25</td><td>255.255.255.128</td><td>126 hosts</td></tr>
+                    <tr><td>/26</td><td>255.255.255.192</td><td>62 hosts</td></tr>
+                    <tr><td>/27</td><td>255.255.255.224</td><td>30 hosts</td></tr>
+                    <tr><td>/28</td><td>255.255.255.240</td><td>14 hosts</td></tr>
+                    <tr><td>/30</td><td>255.255.255.252</td><td>2 hosts</td></tr>
+                    <tr><td>/32</td><td>255.255.255.255</td><td>1 host</td></tr>
+                  </table>
+                </div>
+                <div class="ref-col">
+                  <h4>Private ranges (RFC 1918)</h4>
+                  <table class="ref-table">
+                    <tr><td>10.0.0.0/8</td><td>Class A</td><td>10.0.0.0 — 10.255.255.255</td></tr>
+                    <tr><td>172.16.0.0/12</td><td>Class B</td><td>172.16.0.0 — 172.31.255.255</td></tr>
+                    <tr><td>192.168.0.0/16</td><td>Class C</td><td>192.168.0.0 — 192.168.255.255</td></tr>
+                  </table>
+                  <h4>Special addresses</h4>
+                  <table class="ref-table">
+                    <tr><td>127.0.0.0/8</td><td colspan="2">Loopback</td></tr>
+                    <tr><td>169.254.0.0/16</td><td colspan="2">Link-local (APIPA)</td></tr>
+                    <tr><td>0.0.0.0/0</td><td colspan="2">Default route</td></tr>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <div id="ref-ipv6" class="ref-panel" style="display:none;">
+              <div class="ref-columns">
+                <div class="ref-col">
+                  <h4>Notation format</h4>
+                  <table class="ref-table">
+                    <tr><td>Full</td><td>2001:0db8:0000:0000:0000:0000:0000:0001</td></tr>
+                    <tr><td>Compressed</td><td>2001:db8::1</td></tr>
+                    <tr><td>Prefix</td><td>/48 site, /64 subnet, /128 host</td></tr>
+                  </table>
+                  <h4>Common prefixes</h4>
+                  <table class="ref-table">
+                    <tr><td>/32</td><td>ISP allocation</td></tr>
+                    <tr><td>/48</td><td>Site allocation</td></tr>
+                    <tr><td>/64</td><td>Single subnet (standard)</td></tr>
+                    <tr><td>/128</td><td>Single host</td></tr>
+                  </table>
+                </div>
+                <div class="ref-col">
+                  <h4>Address types</h4>
+                  <table class="ref-table">
+                    <tr><td>::1/128</td><td>Loopback</td></tr>
+                    <tr><td>fe80::/10</td><td>Link-local</td></tr>
+                    <tr><td>fc00::/7</td><td>Unique local (private)</td></tr>
+                    <tr><td>2000::/3</td><td>Global unicast</td></tr>
+                    <tr><td>ff00::/8</td><td>Multicast</td></tr>
+                  </table>
+                  <h4>Key differences from IPv4</h4>
+                  <table class="ref-table">
+                    <tr><td>128-bit</td><td>vs IPv4 32-bit</td></tr>
+                    <tr><td>No broadcast</td><td>Uses multicast instead</td></tr>
+                    <tr><td>No NAT needed</td><td>Enough addresses for all</td></tr>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="result-cards" class="result-cards" style="display:none;">
+          <div class="card-metric">
+            <span class="card-label">Network address</span>
+            <span class="card-value" id="val-network">—</span>
+          </div>
+          <div class="card-metric">
+            <span class="card-label">Broadcast</span>
+            <span class="card-value" id="val-broadcast">—</span>
+          </div>
+          <div class="card-metric">
+            <span class="card-label">Usable range</span>
+            <span class="card-value" id="val-range">—</span>
+          </div>
+          <div class="card-metric">
+            <span class="card-label">Total hosts</span>
+            <span class="card-value" id="val-hosts">—</span>
+          </div>
+          <div class="card-metric">
+            <span class="card-label">Subnet mask</span>
+            <span class="card-value" id="val-mask">—</span>
+          </div>
+          <div class="card-metric">
+            <span class="card-label">Wildcard</span>
+            <span class="card-value" id="val-wildcard">—</span>
+          </div>
+          <div class="card-metric">
+            <span class="card-label">IP class</span>
+            <span class="card-value" id="val-class">—</span>
+          </div>
+          <div class="card-metric">
+            <span class="card-label">IP type</span>
+            <span class="card-value" id="val-type">—</span>
+          </div>
+        </div>
+
+        <div id="bit-visualizer" class="section-box" style="display:none;">
+          <h3 class="section-title">Bit-level visualizer</h3>
+          <div id="bit-display" class="bit-display"></div>
+          <div class="bit-legend">
+            <span class="legend-item"><span class="legend-dot net"></span> Network bits</span>
+            <span class="legend-item"><span class="legend-dot host"></span> Host bits</span>
+          </div>
+        </div>
+
+        <div id="block-map" class="section-box" style="display:none;">
+          <h3 class="section-title">Address block map</h3>
+          <div id="block-grid" class="block-grid"></div>
+          <div class="bit-legend">
+            <span class="legend-item"><span class="legend-dot" style="background:#378ADD;"></span> Network</span>
+            <span class="legend-item"><span class="legend-dot" style="background:#85B7EB;"></span> Usable</span>
+            <span class="legend-item"><span class="legend-dot" style="background:#E24B4A;"></span> Broadcast</span>
+          </div>
+        </div>
+
+      </div>
+
+      <div id="tab-subnetting" class="tab-content">
+        <div class="section-box">
+          <div class="input-group" style="margin-bottom:16px;">
+            <label for="subnet-network">Network CIDR</label>
+            <input type="text" id="subnet-network" placeholder="192.168.1.0/24" spellcheck="false">
+          </div>
+
+          <div class="subnet-mode-toggle">
+            <button class="subnet-mode-btn active" data-smode="flsm">FLSM — Equal subnets</button>
+            <button class="subnet-mode-btn" data-smode="vlsm">VLSM — Variable subnets</button>
+          </div>
+
+          <div id="panel-flsm" class="subnet-panel">
+            <p class="section-desc">Fixed Length Subnet Masking — divide network into equal-sized subnets.</p>
+            <div class="flsm-controls">
+              <label for="flsm-count">Number of subnets</label>
+              <select id="flsm-count">
+                <option value="2">2 subnets</option>
+                <option value="4">4 subnets</option>
+                <option value="8">8 subnets</option>
+                <option value="16">16 subnets</option>
+                <option value="32">32 subnets</option>
+                <option value="64">64 subnets</option>
+              </select>
+              <button id="btn-flsm-calc" class="btn-primary">Calculate</button>
+            </div>
+            <div id="flsm-info" class="flsm-info"></div>
+            <div id="flsm-results"></div>
+          </div>
+
+          <div id="panel-vlsm" class="subnet-panel" style="display:none;">
+            <p class="section-desc">Variable Length Subnet Masking — allocate subnets based on required host counts.</p>
+            <div id="vlsm-rows" class="vlsm-rows">
+              <div class="vlsm-row">
+                <input type="text" placeholder="Subnet name" class="vlsm-name">
+                <input type="number" placeholder="Hosts needed" class="vlsm-hosts" min="1">
+              </div>
+            </div>
+            <div class="vlsm-actions">
+              <button id="btn-vlsm-add" class="btn-secondary">+ Add subnet</button>
+              <button id="btn-vlsm-calc" class="btn-primary">Calculate</button>
+            </div>
+            <div id="vlsm-results"></div>
+          </div>
+
+          <div id="subnet-tree-box" class="section-box" style="display:none;">
+            <h3 class="section-title">Subnet Tree View</h3>
+            <div id="subnet-tree" class="subnet-tree"></div>
+            <div class="mermaid-box">
+              <div class="mermaid-header">
+                <button class="ref-toggle" id="mermaid-toggle">Mermaid Code <span class="ref-arrow">&#9662;</span></button>
+                <button id="btn-copy-mermaid" class="btn-secondary">Copy</button>
+              </div>
+              <pre id="mermaid-code" class="mermaid-code" style="display:none;"></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="bottombar">
+      <div class="footer-left">
+        <span class="footer-text">NetCalc v1.0</span>
+      </div>
+      <div class="footer-right">
+        <button id="btn-export-excel" class="btn-icon" title="Export to Excel">&#128196; Excel</button>
+      </div>
+    </footer>
+  </div>
+
+  <script src="js/ipv4.js"></script>
+  <script src="js/ipv6.js"></script>
+  <script src="js/visualizer.js"></script>
+  <script src="js/export.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
