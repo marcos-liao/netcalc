@@ -25,7 +25,7 @@ A lightweight, browser-based IPv4/IPv6 subnet calculator with visual tools for n
 ## Usage
 
 ```bash
-git clone https://github.com/yourusername/netcalc.git
+git clone https://github.com/marcos-liao/netcalc.git
 cd netcalc
 # Open index.html in your browser — that's it.
 ```
